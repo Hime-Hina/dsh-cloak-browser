@@ -1,6 +1,7 @@
 {
   "name": "dsh-cloak-browser",
-  "version": "0.3.0",
+  "version": "0.3.1-dataseek.0",
+  "packageManager": "pnpm@11.5.2",
   "description": "Native CloakBrowser tools for DeepSeek Harness with per-agent browser sessions and snapshot references.",
   "author": "maxiaovivi",
   "type": "module",
@@ -23,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maxiaovivi/dsh-cloak-browser.git"
+    "url": "git+https://github.com/Hime-Hina/dsh-cloak-browser.git"
   },
   "homepage": "https://github.com/maxiaovivi/dsh-cloak-browser#readme",
   "bugs": {
@@ -53,18 +54,18 @@
     }
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
-    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
+    "@deepseek-ai/dsh-llm": "^0.2.0-rc.2",
+    "@deepseek-ai/dsh-tools": "^0.2.0-rc.2"
   },
   "dependencies": {
     "@deepseek-ai/schemastery": "^3.17.4",
-    "cloakbrowser": "0.5.7",
+    "cloakbrowser": "0.6.2",
     "mmdb-lib": "^3.0.2",
-    "playwright-core": "1.62.0"
+    "playwright-core": "1.64.0"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-llm": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-tools": "0.1.0-rc.6"
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2"
   },
   "engines": {
     "node": ">=20"

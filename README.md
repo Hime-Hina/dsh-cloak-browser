@@ -2,18 +2,20 @@
 
 English | [简体中文](./README.zh-CN.md)
 
+This fork targets DSH `0.2.0-rc.2`, CloakBrowser `0.6.2`, and Playwright Core `1.64.0`, with pnpm for dependency management. It enables the Chromium sandbox and preserves humanized input and automatic snapshots. See [fork changes and network inspection](./docs/DATASEEK.md). The upstream detector and benchmark reports below describe their original test environments.
+
 ## Install
 
 ### Requirements
 
 - Node.js 20 or newer
-- [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) `0.1.0-rc.6`
+- [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) `0.2.0-rc.2`
 - Linux, macOS, or Windows on a platform supported by CloakBrowser
 
 ### Install directly from GitHub
 
 ```bash
-dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
+dsh plugin --profile web add -w github:Hime-Hina/dsh-cloak-browser#codex/dataseek-browser
 
 # Confirm that the bundle was composed into the profile.
 dsh --profile web --dump-config | grep -A24 cloak-browser
@@ -37,7 +39,7 @@ If version 0.1.0 was previously installed, remove it once before reinstalling:
 
 ```bash
 dsh plugin --profile web remove -w dsh-cloak-browser
-dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
+dsh plugin --profile web add -w github:Hime-Hina/dsh-cloak-browser#codex/dataseek-browser
 ```
 
 ### Install from a local clone
@@ -45,15 +47,15 @@ dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
 Use this path when developing or auditing the plugin:
 
 ```bash
-git clone https://github.com/maxiaovivi/dsh-cloak-browser.git
+git clone --branch codex/dataseek-browser https://github.com/Hime-Hina/dsh-cloak-browser.git
 cd dsh-cloak-browser
-npm ci
-plugin_tarball=$(npm pack --silent)
+pnpm install --frozen-lockfile
+pnpm pack --out plugin.tgz
 
 # Ubuntu/Debian only; this may request sudo permission.
-npx playwright-core install-deps chromium
+pnpm exec playwright-core install-deps chromium
 
-dsh plugin --profile web add -w "$PWD/$plugin_tarball"
+dsh plugin --profile web add -w "$PWD/plugin.tgz"
 dsh --profile web --dump-config | grep -A24 cloak-browser
 dsh --profile web
 ```
@@ -305,13 +307,13 @@ The current release pins:
 
 | Component | Version |
 |---|---|
-| dsh-cloak-browser | `0.3.0` |
-| DeepSeek Harness packages | `0.1.0-rc.6` |
-| CloakBrowser wrapper | `0.5.7` |
-| Playwright Core | `1.62.0` |
+| dsh-cloak-browser | `0.3.1-dataseek.0` |
+| DeepSeek Harness packages | `0.2.0-rc.2` |
+| CloakBrowser wrapper | `0.6.2` |
+| Playwright Core | `1.64.0` |
 | Node.js | `>=20` |
 
-Validation performed for this release:
+Validation performed for the original upstream release:
 
 - Unit tests for domain policy, private-host rejection, automatic and iframe
   snapshot refs, stale-ref rejection, safe actionability retries, stable
@@ -327,10 +329,9 @@ Validation performed for this release:
 Run local checks with:
 
 ```bash
-npm run check
-npm test
-npm audit --omit=dev
-npm pack --dry-run
+pnpm run check
+pnpm test
+pnpm run test:integration
 ```
 
 The tests use a fake BrowserContext and do not download Chromium.

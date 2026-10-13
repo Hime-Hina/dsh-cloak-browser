@@ -1,5 +1,7 @@
 # dsh-cloak-browser
 
+此 fork 适配 DSH `0.2.0-rc.2`、CloakBrowser `0.6.2` 和 Playwright Core `1.64.0`，使用 pnpm。显式启用 Chromium 沙箱，并保留 humanize 与自动快照。[改造说明和网络工具](./docs/DATASEEK.md)记录当前行为；下方上游检测与基准报告仍对应各自的历史测试环境。
+
 [English](./README.md) | 简体中文
 
 ## 安装
@@ -7,13 +9,13 @@
 ### 环境要求
 
 - Node.js 20 或更高版本
-- [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) `0.1.0-rc.6`
+- [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) `0.2.0-rc.2`
 - CloakBrowser 支持的 Linux、macOS 或 Windows 平台
 
 ### 直接从 GitHub 安装
 
 ```bash
-dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
+dsh plugin --profile web add -w github:Hime-Hina/dsh-cloak-browser#codex/dataseek-browser
 
 # 确认 Bundle 已进入 profile 的最终配置。
 dsh --profile web --dump-config | grep -A24 cloak-browser
@@ -35,7 +37,7 @@ DSH profile 是 pnpm workspace root，所以需要 `-w`。如果其他 profile �
 
 ```bash
 dsh plugin --profile web remove -w dsh-cloak-browser
-dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
+dsh plugin --profile web add -w github:Hime-Hina/dsh-cloak-browser#codex/dataseek-browser
 ```
 
 ### 从本地克隆安装
@@ -43,15 +45,15 @@ dsh plugin --profile web add -w github:maxiaovivi/dsh-cloak-browser
 开发或审计插件时使用这种方式：
 
 ```bash
-git clone https://github.com/maxiaovivi/dsh-cloak-browser.git
+git clone --branch codex/dataseek-browser https://github.com/Hime-Hina/dsh-cloak-browser.git
 cd dsh-cloak-browser
-npm ci
-plugin_tarball=$(npm pack --silent)
+pnpm install --frozen-lockfile
+pnpm pack --out plugin.tgz
 
 # 仅 Ubuntu/Debian；这一步可能请求 sudo 权限。
-npx playwright-core install-deps chromium
+pnpm exec playwright-core install-deps chromium
 
-dsh plugin --profile web add -w "$PWD/$plugin_tarball"
+dsh plugin --profile web add -w "$PWD/plugin.tgz"
 dsh --profile web --dump-config | grep -A24 cloak-browser
 dsh --profile web
 ```
@@ -264,10 +266,10 @@ CloakBrowser wrapper 源码使用 MIT，但其下载的 Chromium 二进制由 Cl
 
 | 组件 | 版本 |
 |---|---|
-| dsh-cloak-browser | `0.3.0` |
-| DeepSeek Harness packages | `0.1.0-rc.6` |
-| CloakBrowser wrapper | `0.5.7` |
-| Playwright Core | `1.62.0` |
+| dsh-cloak-browser | `0.3.1-dataseek.0` |
+| DeepSeek Harness packages | `0.2.0-rc.2` |
+| CloakBrowser wrapper | `0.6.2` |
+| Playwright Core | `1.64.0` |
 | Node.js | `>=20` |
 
 当前版本执行过：
@@ -282,10 +284,9 @@ CloakBrowser wrapper 源码使用 MIT，但其下载的 Chromium 二进制由 Cl
 本地验证命令：
 
 ```bash
-npm run check
-npm test
-npm audit --omit=dev
-npm pack --dry-run
+pnpm run check
+pnpm test
+pnpm run test:integration
 ```
 
 单元测试使用假的 BrowserContext，不会下载 Chromium。

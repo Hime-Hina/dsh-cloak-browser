@@ -235,7 +235,7 @@ test("plugin exposes a compact native browser tool set and uses snapshot refs", 
   plugin.apply(ctx, { routePrompt: false, allowedDomains: ["example.com"] });
 
   assert.deepEqual([...tools.keys()].sort(), [
-    "browser_click", "browser_close", "browser_extract", "browser_navigate", "browser_open", "browser_press",
+    "browser_click", "browser_close", "browser_extract", "browser_navigate", "browser_network_request", "browser_network_requests", "browser_open", "browser_press",
     "browser_screenshot", "browser_select", "browser_snapshot", "browser_tabs", "browser_type", "browser_wait"
   ]);
   assert.equal(tools.get("browser_type").timeoutMs, 105000);

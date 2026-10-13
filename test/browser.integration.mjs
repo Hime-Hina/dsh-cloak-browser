@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import test from "node:test";
-import { launchContext } from "cloakbrowser";
+import { buildLaunchOptions, launchContext } from "cloakbrowser";
 import { expectedFingerprint, inspectInteractiveLocator, INTERACTIVE_SELECTOR, takePageSnapshot } from "../lib/snapshot.mjs";
 
 function listen(server) {
@@ -22,7 +22,10 @@ test("real CloakBrowser launches, renders, snapshots and screenshots", { timeout
   });
   const address = await listen(server);
   const startedAt = performance.now();
-  const context = await launchContext({ headless: true, humanize: true, geoip: false });
+  const launchOptions = await buildLaunchOptions({ headless: true });
+  launchOptions.args = launchOptions.args.filter((arg) => arg !== "--no-sandbox");
+  launchOptions.chromiumSandbox = true;
+  const context = await launchContext({ headless: true, humanize: true, geoip: false, launchOptions });
   const launchMs = performance.now() - startedAt;
   try {
     const page = context.pages()[0] ?? await context.newPage();

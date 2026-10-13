@@ -12,7 +12,7 @@ test("DSH singleton runtime packages are provided by the host profile", () => {
     "@deepseek-ai/dsh-tools"
   ]) {
     assert.equal(manifest.dependencies?.[packageName], undefined);
-    assert.equal(manifest.peerDependencies?.[packageName], "^0.1.0-rc.6");
-    assert.equal(manifest.devDependencies?.[packageName], "0.1.0-rc.6");
+    assert.equal(manifest.peerDependencies?.[packageName], "^0.2.0-rc.2");
+    assert.equal(manifest.devDependencies?.[packageName], "0.2.0-rc.2");
   }
 });
