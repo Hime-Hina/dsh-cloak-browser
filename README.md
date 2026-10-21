@@ -2,7 +2,7 @@
 
 English | [简体中文](./README.zh-CN.md)
 
-This fork targets DSH `0.2.0-rc.2`, CloakBrowser `0.6.2`, and Playwright Core `1.64.0`, with pnpm for dependency management. It enables the Chromium sandbox and preserves humanized input and automatic snapshots. See [fork changes and network inspection](./docs/DATASEEK.md). The upstream detector and benchmark reports below describe their original test environments.
+This fork targets DSH `0.2.0-rc.2`, CloakBrowser `0.6.2`, and Playwright Core `1.64.0`, with pnpm for dependency management. It enables the Chromium sandbox and preserves humanized input and automatic snapshots. See [fork changes and network inspection](./docs/DATASEEK.md), including the unredacted URL/header contract and output limits. The upstream detector and benchmark reports below describe their original test environments.
 
 ## Install
 
@@ -201,6 +201,13 @@ browser_open(url)
 The default flow needs no manual `browser_snapshot` between actions. The
 explicit snapshot tool remains available when a page changes independently or
 an Agent wants to refresh its view.
+
+`browser_open` (with a URL) and `browser_navigate` accept `wait_until`:
+`commit`, `domcontentloaded` (default), `load`, or `networkidle`. If page scripts
+stall DOMContentLoaded, use `commit`, then `browser_wait({ text: "expected task text" })`.
+Commit only acknowledges navigation, not page readiness. A redirect can invalidate
+the initial snapshot; use the snapshot returned by the wait, or refresh it after
+`snapshotError`, rather than repeating navigation. See [navigation details](docs/DATASEEK.md#navigation-waiting).
 
 | Tool | Purpose |
 |---|---|

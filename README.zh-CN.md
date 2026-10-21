@@ -1,6 +1,6 @@
 # dsh-cloak-browser
 
-此 fork 适配 DSH `0.2.0-rc.2`、CloakBrowser `0.6.2` 和 Playwright Core `1.64.0`，使用 pnpm。显式启用 Chromium 沙箱，并保留 humanize 与自动快照。[改造说明和网络工具](./docs/DATASEEK.md)记录当前行为；下方上游检测与基准报告仍对应各自的历史测试环境。
+此 fork 适配 DSH `0.2.0-rc.2`、CloakBrowser `0.6.2` 和 Playwright Core `1.64.0`，使用 pnpm。显式启用 Chromium 沙箱，并保留 humanize 与自动快照。[改造说明和网络工具](./docs/DATASEEK.md)记录原始 URL/请求头不脱敏的契约及输出限制；下方上游检测与基准报告仍对应各自的历史测试环境。
 
 [English](./README.md) | 简体中文
 
@@ -169,6 +169,12 @@ browser_open(url)
 
 默认流程不需要在每次操作之间手工调用 `browser_snapshot`。页面自行变化或 Agent 需要刷新视图时，
 仍可使用显式 Snapshot Tool。
+
+`browser_open`（传入 URL 时）与 `browser_navigate` 支持 `wait_until`：
+`commit`、`domcontentloaded`（默认）、`load`、`networkidle`。页面脚本使 DOMContentLoaded
+迟迟不触发时，可用 `commit`，再调用 `browser_wait({ text: "目标内容" })`。
+`commit` 仅表示导航提交，不代表内容就绪；重定向可能使初次 Snapshot 失效，应使用等待后返回的
+Snapshot，或在 `snapshotError` 后刷新，不应因此反复导航。参见[导航等待契约](docs/DATASEEK.md#navigation-waiting)。
 
 | Tool | 功能 |
 |---|---|

@@ -49,8 +49,10 @@ test("native tools humanize input, capture responses, isolate Agents and close C
     assert.equal(network.requests.length, 1);
     const detail = await call("browser_network_request", { index: network.requests[0].index, include_body: true });
     assert.deepEqual(JSON.parse(detail.body), { dataset: 42 });
-    assert.equal(detail.responseHeaders["set-cookie"], "[REDACTED]");
-    assert.ok(!JSON.stringify(detail).includes("fixture-hidden"));
+    assert.equal(network.requests[0].url, `http://127.0.0.1:${server.address().port}/api/data?access_token=fixture-hidden`);
+    assert.equal(detail.url, network.requests[0].url);
+    assert.equal(detail.requestHeaders.cookie, "session=fixture-hidden");
+    assert.equal(detail.responseHeaders["set-cookie"], "session=fixture-hidden; SameSite=Lax");
     const other = await call("browser_network_requests", {}, { agent: { id: "other-agent" }, signal: exec.signal });
     assert.equal(other.requests.length, 0);
     await listeners.get("agent/disposed")({ agent: subject });

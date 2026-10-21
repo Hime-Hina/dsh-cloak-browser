@@ -6,7 +6,7 @@ import { NetworkLog } from "../lib/network.mjs";
 function capture(context, extraHeaders = {}, content = "fixture") {
   let reads = 0;
   const request = {
-    url: () => "https://example.com/data?access_token=hidden&signature=hidden&record=42",
+    url: () => "https://example.com/data?access_token=hidden&signature=a%2fb+%20&record=42",
     method: () => "GET", resourceType: () => "fetch",
     headers: () => ({ authorization: "Bearer hidden", cookie: "session=hidden", accept: "text/plain" }),
     failure: () => ({ errorText: "net::ERR_FAILED" })
@@ -22,18 +22,22 @@ function capture(context, extraHeaders = {}, content = "fixture") {
   return { request, reads: () => reads };
 }
 
-test("captured requests are private to each session, redacted, and never replayed", async () => {
+test("captured requests preserve credentials and encoding, stay session-local, and are never replayed", async () => {
   const context = new EventEmitter();
   const log = new NetworkLog(context);
   const other = new NetworkLog(new EventEmitter());
-  const fixture = capture(context);
+  const location = "https://example.com/download?signature=a%2fb+%20&key=fixture";
+  const fixture = capture(context, { location });
   assert.equal(other.list().requests.length, 0);
   assert.equal(log.list("record=42").requests.length, 1);
   assert.equal(log.list("absent").requests.length, 0);
   const detail = await log.detail(1);
-  assert.equal(detail.requestHeaders.authorization, "[REDACTED]");
-  assert.equal(detail.responseHeaders["set-cookie"], "[REDACTED]");
-  assert.ok(!JSON.stringify(detail).includes("hidden"));
+  assert.equal(log.list("access_token=hidden").requests[0].url, fixture.request.url());
+  assert.equal(detail.url, fixture.request.url());
+  assert.equal(detail.requestHeaders.authorization, "Bearer hidden");
+  assert.equal(detail.requestHeaders.cookie, "session=hidden");
+  assert.equal(detail.responseHeaders["set-cookie"], "session=hidden");
+  assert.equal(detail.responseHeaders.location, location);
   assert.equal(fixture.reads(), 0);
   assert.equal((await log.detail(1, true)).body, "fixture");
   assert.equal(fixture.reads(), 1);
